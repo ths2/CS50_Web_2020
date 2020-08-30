@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<style>
+body {
+	margin: 0;
+	
+}
+
+/* Style the header */
+.header {
+    column-count: 2;
+	background-color: #f1f1f1;
+	padding: 10px;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+input[type=text], select, textarea {
+	width: 100%;
+	padding: 12px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	resize: vertical;
+}
+
+label {
+	padding: 12px 12px 12px 0;
+	display: inline-block;
+}
+
+input[type=submit] {
+	background-color: #4d90fe;
+	color: white;
+	padding: 12px 20px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	float: right;
+	margin-top: 10px;
+}
+
+input[type=submit]:hover {
+	background-color: #3079ed;
+}
+
+.container {
+	border-radius: 5px;
+	padding: 20px 35px;
+	position: relative;
+	width: 55%;
+	min-width: 600px;
+	font-family: arial, sans-serif;
+}
+
+.col-25 {
+	position: absolute;
+	float: left;
+	width: 250px;
+	height: 100px;
+	font-size: 10px;
+}
+
+.col-75 {
+	padding-left: 250px;
+	margin-top: 6px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+	content: "";
+	display: table;
+	clear: both;
+}
+
+.div-subTitle {
+	color: red;
+	padding: 5px 35px;
+	font-size: 20px;
+}
+
+.div-subTitleBorder {
+	border-bottom: 1px solid #f1f1f1;
+	font-family: arial, sans-serif;
+}
+
+.div-padinP {
+	padding: 10px 35px 0px;
+	font-family: arial, sans-serif;
+}
+
+.header_img {
+	text-align: left;
+}
+
+.header_text {
+	text-align: right;
+	min-width: 400px;
+}
+</style>
+</head>
+
+<body>
+	<div class="header">
+		<div class="header_img">
+			<img 
+				src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
+				width="90" height="33" >
+		</div>
+		
+		<div class="header_text">
+			<a href="index.html">Google Search</a>
+		</div>
+	</div>
+
+	<div class="div-subTitleBorder">
+		<div class="div-subTitle">
+			<p>Advanced Search</p>
+		</div>
+	</div>
+	<div>
+		<div class="div-padinP">
+			<p>Find pages with...</p>
+		</div>
+
+		<div></div>
+	</div>
+
+	<div class="container">
+		<form action="https://google.com/search">
+			<div class="row">
+				<div class="col-25">
+					<label for="fname">all these words:</label>
+				</div>
+				<div class="col-75">
+					<input type="text" id="fname" name="q">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-25">
+					<label for="lname">this exact word or phrase:</label>
+				</div>
+				<div class="col-75">
+					<input type="text" id="lname" name="as_epq">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-25">
+					<label for="lname">any of these words:</label>
+				</div>
+				<div class="col-75">
+					<input type="text" id="lname" name="as_oq">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-25">
+					<label for="lname">none of these words:</label>
+				</div>
+				<div class="col-75">
+					<input type="text" id="lname" name="as_eq">
+				</div>
+			</div>
+
+			<div class="row">
+				<input type="submit" value="Advanced Search">
+			</div>
+		</form>
+	</div>
+</body>
+</html>
