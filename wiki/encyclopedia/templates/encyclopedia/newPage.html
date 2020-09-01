@@ -7,12 +7,22 @@
 {% block body %}
     <h1>New page</h1>
 
-    <form action="{% url 'index' %}"  method="get">
-        <label for="title">Enter the page name:</label>
-        <input type="text" name="title" placeholder="Title"> 
-        <p><strong>Insert the Markdown content for the page:</strong></p>
-        <textarea name="content"></textarea><br>
-        <input type="submit" value="Save">
+    <form action="{% url 'new' %}" method="post">
+        {% csrf_token %}
+
+        {{ form.titlePage.label }}:
+
+        {{ form.titlePage }}
+
+        {% if existEntry %}
+            <i style="color: red;">ERRO: Entry title already exists</i>
+        {% endif %}
+
+        <p>Insert the text</p>
+        {{ form.contentPage }}
+        <br>
+        <input type="submit" value="Submit">
     </form>
+
 
 {% endblock %}

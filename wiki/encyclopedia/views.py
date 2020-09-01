@@ -1,9 +1,11 @@
 from django.shortcuts import render
+from django.http import HttpResponseRedirect
 
 from . import util
 
 import markdown2
 
+from .forms import NewPageForm
 
 def index(request):
     q = request.GET.get('q')
@@ -38,4 +40,30 @@ def page(request, name):
         return render(request, "encyclopedia/pageNotFound.html")
 
 def new_page(request):
-     return render(request, "encyclopedia/newPage.html")
+    #if this is a POST request we need tovprocess the form data
+    if request.method == 'POST':
+        #create a form instace and populate it with data from the request:
+        form = NewPageForm(request.POST)
+        #check ehether it's valid: 
+        if form.is_valid():
+            #process the data in form.cleaned_data as required 
+            title = form.cleaned_data["titlePage"]
+            content = form.cleaned_data["contentPage"]
+           
+            if util.get_entry(title):
+                return render(request, "encyclopedia/newPage.html", {'form': form, 'exist':True} )
+            else:
+                util.save_entry(title, content)
+                entry = util.get_entry(title)
+                #redirec to new URL:
+                return render(request, "encyclopedia/page.html", {
+                "content": markdown2.markdown(entry)
+            
+            })
+                  
+    #if a GET (or any other method) we'll create a blank form
+    else:
+        form = NewPageForm()
+
+        return render(request, "encyclopedia/newPage.html", {'form': form} )
+       

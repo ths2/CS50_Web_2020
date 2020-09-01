@@ -37,7 +37,10 @@ def get_entry(title):
         return None
 
 def get_sub_entry(search):
-
+    """
+    Retrieves an encyclopedia entry by its partial title. If no such
+    entry exists, the function returns None.
+    """
     allEntires = list_entries()
     subEntries = []
     name = search.casefold()
