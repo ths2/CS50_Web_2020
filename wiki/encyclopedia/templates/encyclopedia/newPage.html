@@ -14,12 +14,13 @@
 
         {{ form.titlePage }}
 
-        {% if existEntry %}
+        {% if exist %}
             <i style="color: red;">ERRO: Entry title already exists</i>
         {% endif %}
 
         <p>Insert the text</p>
         {{ form.contentPage }}
+        
         <br>
         <input type="submit" value="Submit">
     </form>

@@ -5,8 +5,10 @@
 {% endblock %}
 
 {% block body %}
-    <h1>All Pages</h1>
 
-   {{ content|safe }}
 
+    {{ content|safe }}
+   
+
+    <a href="/wiki/edit/{{ title }}">Edit page</a>
 {% endblock %}

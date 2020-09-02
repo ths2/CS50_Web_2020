@@ -5,7 +5,7 @@ from . import util
 
 import markdown2
 
-from .forms import NewPageForm
+from . import forms
 
 def index(request):
     q = request.GET.get('q')
@@ -34,7 +34,7 @@ def page(request, name):
 
     if entry:
         return render(request, "encyclopedia/page.html", {
-            "content": markdown2.markdown(entry)
+            "content": markdown2.markdown(entry), 'title': name
         })
     else:
         return render(request, "encyclopedia/pageNotFound.html")
@@ -43,27 +43,56 @@ def new_page(request):
     #if this is a POST request we need tovprocess the form data
     if request.method == 'POST':
         #create a form instace and populate it with data from the request:
-        form = NewPageForm(request.POST)
+        form = forms.NewPageForm(request.POST)
         #check ehether it's valid: 
         if form.is_valid():
             #process the data in form.cleaned_data as required 
             title = form.cleaned_data["titlePage"]
             content = form.cleaned_data["contentPage"]
-           
+            
             if util.get_entry(title):
                 return render(request, "encyclopedia/newPage.html", {'form': form, 'exist':True} )
             else:
                 util.save_entry(title, content)
                 entry = util.get_entry(title)
-                #redirec to new URL:
+                #redirec to new page:
                 return render(request, "encyclopedia/page.html", {
-                "content": markdown2.markdown(entry)
+                "content": markdown2.markdown(entry), "title": title
             
             })
                   
     #if a GET (or any other method) we'll create a blank form
     else:
-        form = NewPageForm()
-
+        form = forms.NewPageForm()
         return render(request, "encyclopedia/newPage.html", {'form': form} )
-       
+
+def edit_page(request, name):
+     
+    if request.method == 'GET':
+        entry = util.get_entry(name)
+
+        data = {'contentPage': entry}
+        form = forms.EditPageForm(data)
+
+        if entry:
+            return render(request, "encyclopedia/editPage.html", {
+                'form': form, 'title': name
+            })
+        else:
+            return render(request, "encyclopedia/pageNotFound.html")
+
+    elif request.method == 'POST':
+        form = forms.EditPageForm(request.POST)
+        
+        if form.is_valid():
+            content = form.cleaned_data["contentPage"]
+            util.save_entry(name, content)
+            entry = util.get_entry(name)
+            #redirec to new URL:
+            return render(request, "encyclopedia/page.html", {
+                "content": markdown2.markdown(entry), 'title': name
+            })
+        else:
+            return render(request, "encyclopedia/pageNotFound.html")
+    else:
+        return render(request, "encyclopedia/pageNotFound.html")
