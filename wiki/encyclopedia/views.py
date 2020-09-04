@@ -7,6 +7,8 @@ import markdown2
 
 from . import forms
 
+import random
+
 def index(request):
     q = request.GET.get('q')
 
@@ -96,3 +98,12 @@ def edit_page(request, name):
             return render(request, "encyclopedia/pageNotFound.html")
     else:
         return render(request, "encyclopedia/pageNotFound.html")
+
+def random_page(request): 
+     
+    entrys = util.list_entries()
+    numberEntrys = len(entrys)
+    nameEntry = entrys[random.randrange(numberEntrys)]
+
+    print(numberEntrys)
+    return HttpResponseRedirect(nameEntry)
