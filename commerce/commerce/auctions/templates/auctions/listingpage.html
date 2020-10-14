@@ -6,26 +6,44 @@
     <ul>
         <li>Title: {{ listing.name }}</li>
         <li>Description</li>
-        <li>Crrent Price</li>
+        <li>Crrent Price: {{ listing.initial_Price }}</li>
         <li>Foto</li>
     </ul>
     
     {% if  request.user.is_authenticated %}
-         
+        
         <form action="{% url 'listing' listing.id %}" method="post">
             {% csrf_token %}
-            <input type="hidden" name="ar" value="add">
+            <input type="hidden" name="action" value="bin">
+            <div class="form-group">
+                <input class="form-control" type="number" name="value" placeholder="Start Bind">
+             </div>
+            <input type="hidden" name="user_id" value="{{ user.id }}">
+            <input class="btn btn-primary" type="submit" value="Submit" >
+        </form>
+
+        {% if present_user %}
+        <form action="{% url 'listing' listing.id %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="rem">
+            <input type="hidden" name="user_id" value="{{ user.id }}">
+            <input class="btn btn-outline-danger" type="submit" value="Remove Watchlist" >
+        </form>
+        {% else %}
+       
+        <form action="{% url 'listing' listing.id %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add">
             <input type="hidden" name="user_id" value="{{ user.id }}">
             <input class="btn btn-primary" type="submit" value="Add Watchlist" >
         </form>
+        {% endif %}
+        
+        {% if error_mensage %}
+            <a>{{ error_mensage }}</a>
+        {% endif %}
     {% endif %}
     
-    <ul>
-        {% for user in users %}
-            <li>{{ user }}</li>
-        {% empty %}
-            <li>No Passengers.</li>
-        {% endfor %}
-    </ul>
+    
     
 {% endblock %}

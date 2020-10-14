@@ -7,8 +7,9 @@ from django.urls import reverse
 from .models import User, Listing
 
 def index(request):
+    listing = Listing.objects.all()
     return render(request, "auctions/index.html", {
-        "listings": Listing.objects.all()
+        "listings": listing
     })
 
 
@@ -87,24 +88,43 @@ def create_listing(request):
 def listing_page(request, listing_id):
     listing = Listing.objects.get(id=listing_id)
     users = listing.watch_list_users.all()
+    error_mensage = None
 
     if request.method == "POST":  
-        add = request.POST["ar"] 
-        user_id = request.POST["user_id"]
+        action = request.POST["action"] 
+        user_id = request.user.id 
 
         user = User.objects.get(pk=user_id)
-        listing.watch_list_users.add(user)
-        
-        users = listing.watch_list_users.all()
 
+        if action == "add":
+            listing.watch_list_users.add(user)           
+        elif action == "rem":
+            listing.watch_list_users.remove(user)
+        elif action == "bin":
+            print("bin")
+            price = listing.initial_Price
+            value = float(request.POST["value"])
+            if value > price:
+                listing.initial_Price = value
+                listing.save()
+            else:
+                error_mensage = f"Bid must be greater than {price}" 
+
+    username = request.user.username
+    user = users.filter(username=username)
+    if user:
+        return render(request, "auctions/listingpage.html", {
+            "listing": listing,
+            "present_user": user,
+            "error_mensage":error_mensage
+    })
 
     return render(request, "auctions/listingpage.html", {
-        "listing": listing,
-        "users": users
+        "listing": listing
     })
 
 def watchlist(request):
-    user_id = request.user.id
+    user_id = request.user.id   
     listings = Listing.objects.filter(watch_list_users=user_id)
     return render(request, "auctions/watchlist.html", {
         "listings": listings
