@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Listing
+from .models import User, Listing, Comment, Bid
 
 def index(request):
     listing = Listing.objects.all()
@@ -76,7 +76,8 @@ def create_listing(request):
 
         user = request.user
 
-        listing = Listing(name=title, description=description, image_url=image, initial_Price=bind, user_listing=user)
+        listing = Listing(name=title, description=description, image_url=image, initial_Price=bind, user_listing=user, 
+            highest_bidder=user)
         listing.save()
 
         return HttpResponseRedirect(reverse("index"))
@@ -101,26 +102,60 @@ def listing_page(request, listing_id):
         elif action == "rem":
             listing.watch_list_users.remove(user)
         elif action == "bin":
-            print("bin")
             price = listing.initial_Price
             value = float(request.POST["value"])
             if value > price:
                 listing.initial_Price = value
+                listing.highest_bidder = user
+                binds = Bid(listing_id=listing_id, user=user, value=value )
+                binds.save()
                 listing.save()
             else:
                 error_mensage = f"Bid must be greater than {price}" 
+        elif action == "can":
+            listing.active_listing = False
+            listing.save()
+        elif action == "comment":
+            comment = Comment(user=user, comment=request.POST["comment"])
+            comment.save()
+            listing.comments.add(comment)
+            listing.save()
+            print("oi")
+
 
     username = request.user.username
     user = users.filter(username=username)
+    user_creator = listing.user_listing.username
+    pertence = False
+    highest_bidder = listing.highest_bidder.username
+    all_comments = listing.comments.all()
+    if username == user_creator:
+        pertence = True
+
     if user:
+        if not listing.active_listing:
+            if username == highest_bidder:
+                return render(request, "auctions/listingpage.html", {
+                "listing": listing,
+                "present_user": user,
+                "error_mensage":error_mensage,
+                "user_creator": pertence,
+                "hisghest_bidder": highest_bidder,
+                "comments": all_comments
+            })
         return render(request, "auctions/listingpage.html", {
             "listing": listing,
             "present_user": user,
-            "error_mensage":error_mensage
-    })
+            "error_mensage":error_mensage,
+            "user_creator": pertence,
+            "comments": all_comments
+        })
 
     return render(request, "auctions/listingpage.html", {
-        "listing": listing
+        "listing": listing,
+         "user_creator": pertence,
+         "error_mensage":error_mensage,
+         "comments": all_comments
     })
 
 def watchlist(request):

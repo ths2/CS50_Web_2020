@@ -2,14 +2,38 @@
 
 {% block body %}
 
-    <h2>Listing Page</h2>
-    <ul>
-        <li>Title: {{ listing.name }}</li>
-        <li>Description</li>
-        <li>Crrent Price: {{ listing.initial_Price }}</li>
-        <li>Foto</li>
-    </ul>
+    <div>
+        <h2>Listing: {{ listing.name }}</h2>
+
+        {% if  request.user.is_authenticated %}
+            {% if present_user %}
+            <form action="{% url 'listing' listing.id %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="rem">
+                <input type="hidden" name="user_id" value="{{ user.id }}">
+                <input class="btn btn-outline-danger" type="submit" value="Remove Watchlist" >
+            </form>
+            {% else %}
+        
+            <form action="{% url 'listing' listing.id %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add">
+                <input type="hidden" name="user_id" value="{{ user.id }}">
+                <input class="btn btn-primary" type="submit" value="Add Watchlist" >
+            </form>
+            {% endif %}
+        {% endif %}
+    </div>   
+    <img src="{{ listing.image_url }}" width="340">
     
+    <a>{{ listing.description }}</a>
+    <h3> $ {{ listing.initial_Price }} </h3>
+
+    
+    {% if hisghest_bidder %}
+        <a>vc foi o vencedor!</a>
+    {% endif %}
+
     {% if  request.user.is_authenticated %}
         
         <form action="{% url 'listing' listing.id %}" method="post">
@@ -21,29 +45,46 @@
             <input type="hidden" name="user_id" value="{{ user.id }}">
             <input class="btn btn-primary" type="submit" value="Submit" >
         </form>
-
-        {% if present_user %}
-        <form action="{% url 'listing' listing.id %}" method="post">
-            {% csrf_token %}
-            <input type="hidden" name="action" value="rem">
-            <input type="hidden" name="user_id" value="{{ user.id }}">
-            <input class="btn btn-outline-danger" type="submit" value="Remove Watchlist" >
-        </form>
-        {% else %}
-       
-        <form action="{% url 'listing' listing.id %}" method="post">
-            {% csrf_token %}
-            <input type="hidden" name="action" value="add">
-            <input type="hidden" name="user_id" value="{{ user.id }}">
-            <input class="btn btn-primary" type="submit" value="Add Watchlist" >
-        </form>
-        {% endif %}
         
         {% if error_mensage %}
             <a>{{ error_mensage }}</a>
         {% endif %}
+
+        {% if user_creator %}
+        <form action="{% url 'listing' listing.id %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="can">
+            <input class="btn btn-primary" type="submit" value="Finalizar Leilão" >
+        </form>
+        {% endif %}
+
+        <form action="{% url 'listing' listing.id %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="comment">
+            <textarea type="text" name="comment" rows="10" cols="50"></textarea>
+            <input class="btn btn-outline-danger" type="submit" value="Add Comment" >
+        </form>
+
     {% endif %}
     
+        
     
-    
+        {% if comments %}
+        <table class="table table-striped">
+            <thead>
+             
+            </thead>
+            <tbody>
+                
+                {% for comment in comments %}
+                
+                <tr> 
+                    <th>{{ comment.comment }}</th>        
+                </tr>
+            
+                {% endfor %} 
+            
+            </tbody>
+          </table>
+          {% endif %}
 {% endblock %}

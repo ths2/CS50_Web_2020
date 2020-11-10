@@ -2,27 +2,22 @@
 
 {% block body %}
     <h2>Active Listings</h2>
-    
-    <table class="table table-striped">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Primeiro</th>
-            <th scope="col">Último</th>
-            <th scope="col">Nickname</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for listing in listings %}
-          
-          <tr> 
-              <th scope="row"><img src="{{ listing.image_url }}" alt="Italian Trulli" style="width:42px;height:42px"></th>
-              <td><a href="{% url 'listing' listing.id %}">{{ listing.name }}</a></td>
-              <td>{{ listing.description }}</td>
-              <td><img src="{{ listing.image_url }}" alt="Italian Trulli" style="width:42px;height:42px"></td>
-          </tr>
-         
-          {% endfor %} 
-        </tbody>
-      </table>
+
+
+      {% for listing in listings %}
+        <div class="grid-container">  
+          <div>
+            <a href="{% url 'listing' listing.id %}">
+              <img src="{{ listing.image_url }}" class="img" width="230" height="150">
+            </a>
+          </div>
+          <div>
+            <a>{{ listing.name }}</a>
+            <a>{{ listing.description }}</a>
+          </div>
+        </div>
+        <br>
+      {% endfor %}
+
+
 {% endblock %}

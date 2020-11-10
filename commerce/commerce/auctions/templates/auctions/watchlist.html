@@ -6,7 +6,7 @@
 
     <ul>
         {% for listing in listings %}
-            <li>{{ listing.name }}</li>
+            <li><a href="{% url 'listing' listing.id %}">{{ listing.name }}</a></li>
         {% empty %}
             <li>No Listing.</li>
         {% endfor %}
