@@ -5,18 +5,20 @@
 
 
       {% for listing in listings %}
-        <div class="grid-container">  
-          <div>
-            <a href="{% url 'listing' listing.id %}">
-              <img src="{{ listing.image_url }}" class="img" width="230" height="150">
-            </a>
+        {% if listing.active_listing %}
+          <div class="grid-container">  
+            <div>
+              <a href="{% url 'listing' listing.id %}">
+                <img src="{{ listing.image_url }}" class="img" width="230" height="150">
+              </a>
+            </div>
+            <div>
+              <a>{{ listing.name }}</a>
+              <a>{{ listing.description }}</a>
+            </div>
           </div>
-          <div>
-            <a>{{ listing.name }}</a>
-            <a>{{ listing.description }}</a>
-          </div>
-        </div>
-        <br>
+          <br>
+        {% endif %}
       {% endfor %}
 
 
