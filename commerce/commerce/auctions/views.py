@@ -114,7 +114,7 @@ def listing_page(request, listing_id):
                 error_mensage = f"Bid must be greater than {price}" 
         elif action == "can":
             listing.active_listing = False
-            listing.save()
+            listing.save() 
         elif action == "comment":
             comment = Comment(user=user, comment=request.POST["comment"])
             comment.save()
