@@ -1,9 +1,18 @@
 document.addEventListener('DOMContentLoaded', function() {
 
   // Use buttons to toggle between views
-  document.querySelector('#inbox').addEventListener('click', () => load_mailbox('inbox'));
-  document.querySelector('#sent').addEventListener('click', () => load_mailbox('sent'));
-  document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
+  document.querySelector('#inbox').addEventListener('click', () => {
+    load_mailbox('inbox');
+    request_emails('inbox');
+  });
+  document.querySelector('#sent').addEventListener('click', () => {
+    load_mailbox('sent')
+    request_emails('sent');
+  });
+  document.querySelector('#archived').addEventListener('click', () => {
+    load_mailbox('archive')
+    request_emails('archive');
+  });
   document.querySelector('#compose').addEventListener('click', compose_email);
 
 
@@ -19,6 +28,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // By default, load the inbox
     load_mailbox('inbox');
 });
+
+
+// *Functions*
 
 function compose_email() {
 
@@ -59,4 +71,28 @@ function post_email(recipients, subjects, body){
   });
 
   load_mailbox('sent');
+}
+
+function request_emails(title){
+  var m = title;
+  var str = '/emails/' + title;
+  console.log(str);
+  fetch(str)
+  .then(response => response.json())
+  .then(emails => {
+      // Print emails
+      //console.log(emails);
+
+      emails.forEach(element => {
+        console.log(element);
+        // ... do something else with emails ...
+        const email = document.createElement('div');
+        email.innerHTML = element.body;
+        email.addEventListener('click', function() {
+            console.log('This element has been clicked!')
+        });
+        console.log(element.body);
+        document.querySelector('#emails-view').append(email);
+      });
+    });
 }
