@@ -13,6 +13,9 @@ class Listing(models.Model):
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
     active = models.BooleanField(default=True)
 
+    def __str__(self):
+        return f"{self.id}: {self.title}"
+
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.CharField(max_length=500)
@@ -20,9 +23,12 @@ class Comment(models.Model):
     
 class Bid(models.Model):
     value_bid = models.FloatField()
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_bids")
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="listing_bids")
     
+    def __str__(self):
+       return f"{self.id}: {self.value_bid}"
+
 class Category(models.Model):
     name = models.CharField(max_length=40)
     listings = models.ManyToManyField(Listing, blank=True, related_name="categories")
