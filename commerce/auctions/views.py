@@ -90,15 +90,19 @@ def create_listing(request):
             description = form.cleaned_data["listing_discription"]
             image_url = form.cleaned_data["listing_image"]
             start_bid = form.cleaned_data["start_bid"]
-'''
+
             #Create a new listing
             l = Listing(title=title, description=description, 
                 image_url=image_url, start_bid=start_bid, creator=creator)
             l.save()    
-'''
+
+            #Defines the categories of the listings
             cat = form.cleaned_data["category"]
-            print(cat)
-                    
+            
+            for c in cat:
+                category = Category.objects.get(pk=c)
+                category.listings.add(l)
+
     # if a GET (or any other method) we'll create a blank form
     else:
         form = NewListingForm()
