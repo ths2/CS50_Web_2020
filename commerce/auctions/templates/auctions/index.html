@@ -3,5 +3,49 @@
 {% block body %}
     <h2>Active Listings</h2>
 
-    TODO
+    <h1>Listing {{ 1 }}</h1>
+
+    <h2>Categories:</h2>
+    <ul>
+        {% for category in categories %}
+            <li>{{ category.name }}</li>
+        {% empty %}
+            <li>No Category.</li>
+        {% endfor %}
+    </ul>
+    
+
+
+        <h1>My First Bootstrap Page</h1>
+        <p>This container has a border and some extra padding and margins.</p>
+        <div class="div_listing">      
+            <div class="row">
+                <div class="col-sm-4" style="background-color:lavender;">
+                    <img src="{{listing.image_url}}" alt="Flowers in Chania" class="div1">
+                </div>
+                <div class="col-sm-8" style="background-color:lavenderblush;"> 
+                    <p>{{listing.title}}</p>
+                    <p>Price: {{listing.title}}</p>
+                    <p>oi? {{listing.Bid.listing.all}}</p>
+                    
+                </div>            
+            </div>
+          </div>
+
+          <div class="container-fluid">      
+            <div class="row">
+                <div class="col-sm-4" style="background-color:lavender;">
+                    <img src="{{listing.image_url}}" alt="Flowers in Chania" class="div1">
+                </div>
+                <div class="col-sm-8" style="background-color:lavenderblush;"> 
+                    <p>{{listing.title}}</p>
+                    <p>Price: {{listing.title}}</p>
+                    <p>oi? {{listing.Bid.listing.all}}</p>
+                    
+                </div>            
+            </div>
+          </div>
+
+
+      <div class="div1">This div is smaller (width is 300px and height is 100px).</div>
 {% endblock %}
