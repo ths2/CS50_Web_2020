@@ -7,15 +7,21 @@ from django.urls import reverse
 from .models import User, Listing, Bid, Category
 from .forms import NewListingForm
 
-def index(request):
-    listing = Listing.objects.get(id=1)
-    categories = listing.categories.all()
-    
-    
+from django.db.models import Max
 
+def index(request):
+    listings = Listing.objects.all()
+    list1 = []
+    list2 = []
+   
+    for l in listings:
+        a = l.listing_bids.all().aggregate(Max('value_bid'))["value_bid__max"]
+        list1 = [l, a]
+        list2.append(list1)
+    
+   
     return render(request, "auctions/index.html", {
-        "listing": listing,
-        "categories": categories,   
+        "listings": list2
         })
     
 
