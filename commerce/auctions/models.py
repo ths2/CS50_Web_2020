@@ -12,7 +12,8 @@ class Listing(models.Model):
     start_bid = models.FloatField()
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
     active = models.BooleanField(default=True)
-
+    date_create = models.DateTimeField(auto_now_add=True)
+     
     def __str__(self):
         return f"{self.id}: {self.title}"
 
