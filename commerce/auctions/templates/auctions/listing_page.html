@@ -1,0 +1,16 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>{{listing.title}}</h2>
+    
+    <img src="{{listing.image_url}}">
+    <p>Description: {{listing.description}}</p>
+    <p>Price: {{price}}</p>
+
+    <form action="{% url 'lpage' listing.id %}" method="post">
+        {% csrf_token %}
+            {{ form.as_p }}
+        <p><input type="submit" value="Submit"></p>
+    </form>
+
+{% endblock %}

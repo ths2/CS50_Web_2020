@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from .models import User, Listing, Bid, Category
-from .forms import NewListingForm
+from .forms import NewListingForm, BindListing
 
 from django.db.models import Max
 
@@ -14,6 +14,7 @@ def index(request):
     list1 = []
     list2 = []
    
+    # Search the list's max value 
     for l in listings:
         a = l.listing_bids.all().aggregate(Max('value_bid'))["value_bid__max"]
         list1 = [l, a]
@@ -114,3 +115,41 @@ def create_listing(request):
         form = NewListingForm()
 
     return render(request, 'auctions/create_listing.html', {'form': form})
+
+def listing_page(request, listing_id):
+    
+    listing = Listing.objects.get(pk=listing_id)
+    maxPrice = listing.listing_bids.all().aggregate(Max('value_bid'))["value_bid__max"]
+
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = BindListing(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required
+            # ...
+            # redirect to a new URL:
+            #return HttpResponseRedirect('/thanks/')
+
+            creator = request.user
+            price = form.cleaned_data["price_bind"]
+
+            '''# Add a new price for the listing
+            l = Listing(title=title, description=description, 
+                image_url=image_url, start_bid=start_bid, creator=creator)
+            l.save()    '''
+
+            if maxPrice > price:
+                print("O valor tem que ser maior que: " + str(maxPrice))
+
+            form = BindListing()
+
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = BindListing()
+
+    return render(request, "auctions/listing_page.html",{
+        "listing": listing,
+        "price": maxPrice,
+        "form": form
+    })
