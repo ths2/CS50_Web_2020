@@ -6,11 +6,41 @@
     <img src="{{listing.image_url}}">
     <p>Description: {{listing.description}}</p>
     <p>Price: {{price}}</p>
+    
+    {% if respWin %}
+        <h3>{{respWin}}</h3>
+    {% endif %}
 
+    <form action="{% url 'lwl' listing.id %}" method="post">
+        {% csrf_token %}
+            {{ formWL }}
+        <p><input type="submit" value="Watchlist"></p>
+    </form>
+    
     <form action="{% url 'lpage' listing.id %}" method="post">
         {% csrf_token %}
             {{ form.as_p }}
+            {% if errormsg %}
+                {{errormsg}}
+            {% endif %}
+        <p><input type="submit" value="Submit"></p>
+    </form>
+    
+    {% if isuser and listing.active %}
+        <form action="{% url 'lpage' listing.id %}" method="post">
+            {% csrf_token %}
+                {{ formClose }}
+            <p><input type="submit" value="Close"></p>
+        </form>
+    {% endif %}
+ 
+    <form action="{% url 'lc' listing.id %}" method="post">
+        {% csrf_token %}
+           {{ formComment }}
         <p><input type="submit" value="Submit"></p>
     </form>
 
+    {% for comment in comments %}
+        <p>{{ comment.text }}</p>
+    {% endfor %}
 {% endblock %}

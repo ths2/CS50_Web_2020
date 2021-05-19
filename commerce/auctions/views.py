@@ -4,8 +4,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Listing, Bid, Category
-from .forms import NewListingForm, BindListing
+from .models import *
+from .forms import *
 
 from django.db.models import Max
 
@@ -118,12 +118,22 @@ def create_listing(request):
 
 def listing_page(request, listing_id):
     
+    user = request.user
+    
     listing = Listing.objects.get(pk=listing_id)
+    listingUser = listing.creator
+
     maxPrice = listing.listing_bids.all().aggregate(Max('value_bid'))["value_bid__max"]
+    
+    errormsg = False
+
+    comments = Comment.objects.all().filter(listing=listing)
 
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
         form = BindListing(request.POST)
+        formClose = IsUser(request.POST)
+
         # check whether it's valid:
         if form.is_valid():
             # process the data in form.cleaned_data as required
@@ -131,7 +141,6 @@ def listing_page(request, listing_id):
             # redirect to a new URL:
             #return HttpResponseRedirect('/thanks/')
 
-            creator = request.user
             price = form.cleaned_data["price_bind"]
 
             '''# Add a new price for the listing
@@ -139,17 +148,136 @@ def listing_page(request, listing_id):
                 image_url=image_url, start_bid=start_bid, creator=creator)
             l.save()    '''
 
-            if maxPrice > price:
-                print("O valor tem que ser maior que: " + str(maxPrice))
-
-            form = BindListing()
+            if maxPrice == None:
+                maxPrice = listing.start_bid
+                if maxPrice <= price:
+                    b = Bid(value_bid=price, user=user, listing=listing)
+                    b.save()
+                else:
+                    errormsg = "O valor tem que ser maior ou igual a: " + str(maxPrice)
+            elif maxPrice >= price:
+                errormsg = "O valor tem que ser maior que: " + str(maxPrice)
+            elif price > maxPrice:
+                b = Bid(value_bid=price, user=user, listing=listing)
+                b.save()
+                maxPrice = price
+                print("lance efutado com sucesso!")
+        
+        elif formClose.is_valid():
+            listing.active = False
+            listing.save()
 
     # if a GET (or any other method) we'll create a blank form
-    else:
-        form = BindListing()
+
+    form = BindListing()
+    formWL = WatchListing()
+    formClose = IsUser()
+    formComment = CommentListing()
+
+    isUser = False
+    if user == listingUser:
+        isUser = True
+
+    if maxPrice == None:
+        maxPrice = listing.start_bid
+
+    #Verifica se a lista está ativa
+    respWin = False 
+    if not listing.active:
+        userWin = Bid.objects.get(listing=listing, value_bid=maxPrice).user
+        print(userWin)
+        if user == userWin:
+            print("oi2")
+            respWin = "Congratulations, you win the listing!"
+        
 
     return render(request, "auctions/listing_page.html",{
         "listing": listing,
         "price": maxPrice,
-        "form": form
+        "form": form,
+        "formWL": formWL,
+        "formClose": formClose,
+        "isuser": isUser,
+        "errormsg": errormsg,
+        "formComment": formComment,
+        "comments": comments,
+        "respWin": respWin,
     })
+
+#def listing_close(request, listing_id):
+
+
+def listing_wl(request, listing_id):
+    
+    user = request.user
+    listing = Listing.objects.get(pk=listing_id)
+
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        formWL = WatchListing(request.POST)
+
+        if formWL.is_valid(): 
+
+            # Checks whether the listing is on watchlisting
+            if listing.watchlist.filter(pk = user.pk).exists():
+                listing.watchlist.remove(user)
+                print("lista removida")
+            else: 
+                listing.watchlist.add(user)
+                print("lista add")
+    
+    print("Ola mdf")
+    return HttpResponseRedirect(reverse("lpage", args=([str(listing_id)])))
+
+
+
+def listing_comments(request, listing_id):
+    user = request.user
+    listing = Listing.objects.get(pk=listing_id)
+    l = str(listing_id)
+
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        text_comment = CommentListing(request.POST)
+
+        if text_comment.is_valid(): 
+
+           t= text_comment.cleaned_data["comment"]
+           c = Comment(user=user, text=t, listing=listing)
+           c.save()
+    
+    print(listing_id)
+    return HttpResponseRedirect("/listingpage/"+l)
+
+def watch_list(request):
+    user = request.user
+
+    watchlist = user.watchlist.all()
+
+    return render(request, "auctions/watchlist.html",{
+        "listings": watchlist,
+    
+    })
+
+def categories(request):
+    
+    categories = Category.objects.all()
+    
+    return render(request, "auctions/categories.html",{
+        "categories":  categories 
+    })
+
+def category_list(request, category_id):
+    
+    cat = Category.objects.get(pk=category_id)
+    
+    listings = cat.listings.all()
+
+    print(listings)
+
+    return render(request, "auctions/category_list.html",{
+        "listings":  listings, 
+    })
+
+
+
