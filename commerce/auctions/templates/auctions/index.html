@@ -4,25 +4,25 @@
     <h2>Active Listings</h2>
 
     {% for listing, value in listings %}
-        <div class="div_listing">  
-            <a href="{% url 'lpage' listing.id %}">    
-            <div class="row">
-                <div class="col-sm-4" style="background-color:lavender;">
-                    <img src="{{listing.image_url}}" alt="Flowers in Chania" class="div1">
+        <a href="{% url 'lpage' listing.id %}">  
+            <div class="container-fluid p-3 my-3 border">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <img src="{{listing.image_url}}" alt="Flowers in Chania" class="mx-auto d-block">
+                    </div>
+                    <div class="col-sm-8"> 
+                        <p>{{ listing.title }}</p>
+                        {% if value %}
+                            <p>Price: {{ value }}</p>
+                        {% else %}
+                            <p>Price: {{listing.start_bid}}</p> 
+                        {% endif %}
+                        <p>{{ listing.date_create }}</p>
+                        
+                    </div>            
                 </div>
-                <div class="col-sm-8" style="background-color:lavenderblush;"> 
-                    <p>{{ listing.title }}</p>
-                    {% if value %}
-                        <p>Price: {{ value }}</p>
-                    {% else %}
-                        <p>Price: {{listing.start_bid}}</p> 
-                    {% endif %}
-                    <p>{{ listing.date_create }}</p>
-                    
-                </div>            
             </div>
-            </a>
-        </div>
+        </a>
     {% empty %}
         No Category.
     {% endfor %}
