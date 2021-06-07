@@ -129,6 +129,9 @@ def listing_page(request, listing_id):
 
     comments = Comment.objects.all().filter(listing=listing)
 
+    #Checks whether the listing is on watchlisting
+    existsWl=listing.watchlist.filter(pk = user.pk).exists()
+ 
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
         form = BindListing(request.POST)
@@ -187,7 +190,6 @@ def listing_page(request, listing_id):
         userWin = Bid.objects.get(listing=listing, value_bid=maxPrice).user
         print(userWin)
         if user == userWin:
-            print("oi2")
             respWin = "Congratulations, you win the listing!"
         
 
@@ -202,6 +204,7 @@ def listing_page(request, listing_id):
         "formComment": formComment,
         "comments": comments,
         "respWin": respWin,
+        "existsWl": existsWl
     })
 
 #def listing_close(request, listing_id):

@@ -5,19 +5,21 @@
 
     {% for listing, value in listings %}
         <a href="{% url 'lpage' listing.id %}">  
-            <div class="container-fluid p-3 my-3 border">
+            <div class="container-fluid  my-3 border">
                 <div class="row">
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
+                        <div class="teste">
                         <img src="{{listing.image_url}}" alt="Flowers in Chania" class="mx-auto d-block">
                     </div>
-                    <div class="col-sm-8"> 
-                        <p>{{ listing.title }}</p>
+                    </div>
+                    <div class="col-sm-9"> 
+                        <h3>{{ listing.title }}</h3>
                         {% if value %}
-                            <p>Price: {{ value }}</p>
+                            <h6>Price: ${{ value }}</h6>
                         {% else %}
-                            <p>Price: {{listing.start_bid}}</p> 
+                            <h6>Price: ${{listing.start_bid}}</h6> 
                         {% endif %}
-                        <p>{{ listing.date_create }}</p>
+                        <p>Created: <small> {{ listing.date_create }}</small></p>
                         
                     </div>            
                 </div>

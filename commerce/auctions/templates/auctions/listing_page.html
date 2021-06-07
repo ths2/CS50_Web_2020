@@ -1,46 +1,77 @@
 {% extends "auctions/layout.html" %}
-
+{% load bootstrap %}
 {% block body %}
-    <h2>{{listing.title}}</h2>
-    
-    <img src="{{listing.image_url}}">
-    <p>Description: {{listing.description}}</p>
-    <p>Price: {{price}}</p>
+    <h1>Listing: {{listing.title}}</h1>
+
     
     {% if respWin %}
         <h3>{{respWin}}</h3>
     {% endif %}
 
-    <form action="{% url 'lwl' listing.id %}" method="post">
-        {% csrf_token %}
-            {{ formWL }}
-        <p><input type="submit" value="Watchlist"></p>
-    </form>
+    {% if existsWl %}
+    <span class="badge badge-dark">Watchlist</span>
+    {% endif %}
+
+        <div class="row">
+          <div class="col-sm-4">
+            <div>  
+                <img class="limg" src="{{listing.image_url}}">        
+                <p>Description: {{listing.description}}</p>
+                <h3>Price: {{price}}</h3>
+            </div>
+          </div>
+          <div class="col-sm-8">
+            <form action="{% url 'lwl' listing.id %}" method="post">
+                {% csrf_token %}
+                    {{ formWL|bootstrap }}
+                <button type="submit" class="btn btn-primary">Add Watchlist</button>
+            </form>
+            <p></p>
+            {% if isuser and listing.active %}
+            <form action="{% url 'lpage' listing.id %}" method="post">
+                {% csrf_token %}
+                    {{ formClose }}
+                <button type="submit" class="btn btn-primary mb-2">Stop Listing</button>
+            </form>
+        {% endif %}
+          </div>
+        </div>
+  
+
+
+
     
-    <form action="{% url 'lpage' listing.id %}" method="post">
+
+    <div >
+    <form class="form-inline" action="{% url 'lpage' listing.id %}" method="post">
         {% csrf_token %}
-            {{ form.as_p }}
+            {{ form|bootstrap }}
             {% if errormsg %}
                 {{errormsg}}
             {% endif %}
-        <p><input type="submit" value="Submit"></p>
+            <button type="submit" class="btn btn-primary mb-2">Place Bid</button>   
     </form>
-    
-    {% if isuser and listing.active %}
-        <form action="{% url 'lpage' listing.id %}" method="post">
-            {% csrf_token %}
-                {{ formClose }}
-            <p><input type="submit" value="Close"></p>
-        </form>
-    {% endif %}
+    </div>
+
+
  
     <form action="{% url 'lc' listing.id %}" method="post">
         {% csrf_token %}
-           {{ formComment }}
-        <p><input type="submit" value="Submit"></p>
+           {{ formComment|bootstrap  }}
+        <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 
+    <h1>Comments</h1>
     {% for comment in comments %}
-        <p>{{ comment.text }}</p>
+    <div class="container mt-1"></div>
+        <div class="media border p-3">
+            <img src="https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553__340.png" alt="John Doe" class="mr-3 mt-3 rounded-circle" style="width:60px;">
+            <div class="media-body">
+                <h4>{{ comment.user }}</h4>
+                <p>{{ comment.text }}</p>  
+            </div>
+        </div>
+    </div>
+      
     {% endfor %}
 {% endblock %}
