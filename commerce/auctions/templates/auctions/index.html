@@ -4,7 +4,7 @@
     <h2>Active Listings</h2>
 
     {% for listing, value in listings %}
-        <a href="{% url 'lpage' listing.id %}">  
+        <a class="nav-link" href="{% url 'lpage' listing.id %}">  
             <div class="container-fluid  my-3 border">
                 <div class="row">
                     <div class="col-sm-3">

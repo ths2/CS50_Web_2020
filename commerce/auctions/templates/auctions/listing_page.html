@@ -24,7 +24,15 @@
             <form action="{% url 'lwl' listing.id %}" method="post">
                 {% csrf_token %}
                     {{ formWL|bootstrap }}
-                <button type="submit" class="btn btn-primary">Add Watchlist</button>
+                
+                {% if isuser and listing.active %}
+                    {% if existsWl %}   
+                        <button type="submit" class="btn btn-danger">Remove Watchlist</button>
+                    {% else %}
+                        <button type="submit" class="btn btn-primary">Add Watchlist</button>
+                    {% endif %}
+                {% endif %}
+
             </form>
             <p></p>
             {% if isuser and listing.active %}
@@ -33,7 +41,7 @@
                     {{ formClose }}
                 <button type="submit" class="btn btn-primary mb-2">Stop Listing</button>
             </form>
-        {% endif %}
+            {% endif %}
           </div>
         </div>
   
@@ -41,8 +49,8 @@
 
 
     
-
-    <div >
+    {% if user.is_authenticated %}   
+    <div >     
     <form class="form-inline" action="{% url 'lpage' listing.id %}" method="post">
         {% csrf_token %}
             {{ form|bootstrap }}
@@ -52,18 +60,11 @@
             <button type="submit" class="btn btn-primary mb-2">Place Bid</button>   
     </form>
     </div>
+    {% endif %}
 
-
- 
-    <form action="{% url 'lc' listing.id %}" method="post">
-        {% csrf_token %}
-           {{ formComment|bootstrap  }}
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
-
-    <h1>Comments</h1>
+    <div class="comment">
+    <h1>Comments:</h1>
     {% for comment in comments %}
-    <div class="container mt-1"></div>
         <div class="media border p-3">
             <img src="https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553__340.png" alt="John Doe" class="mr-3 mt-3 rounded-circle" style="width:60px;">
             <div class="media-body">
@@ -71,7 +72,17 @@
                 <p>{{ comment.text }}</p>  
             </div>
         </div>
-    </div>
-      
+   
     {% endfor %}
+
+</div>
+
+{% if isuser and listing.active %}
+<form action="{% url 'lc' listing.id %}" method="post">
+    {% csrf_token %}
+       {{ formComment|bootstrap  }}
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% endif %}
+
 {% endblock %}

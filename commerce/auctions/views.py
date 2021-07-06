@@ -109,7 +109,8 @@ def create_listing(request):
             for c in cat:
                 category = Category.objects.get(pk=c)
                 category.listings.add(l)
-
+            
+            return HttpResponseRedirect(reverse("index"))
     # if a GET (or any other method) we'll create a blank form
     else:
         form = NewListingForm()

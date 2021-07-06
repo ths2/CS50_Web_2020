@@ -26,3 +26,9 @@ div.teste img{
   max-width:100%;
   height:100%;
 }
+
+
+div.comment {
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
