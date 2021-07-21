@@ -1,11 +1,10 @@
 var tela = 'inbox';
+var teste = null;
 document.addEventListener('DOMContentLoaded', function() {
 
   // Use buttons to toggle between views
   document.querySelector('#inbox').addEventListener('click', () => {
-    load_mailbox('inbox');
-    tela = 'inbox';
-    request_emails();  
+    load_inbox()
   });
   document.querySelector('#sent').addEventListener('click', () => {
     load_mailbox('sent');
@@ -19,20 +18,38 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   document.querySelector('#compose').addEventListener('click', compose_email);
 
- 
+  document.querySelector('#reply_button').addEventListener('click', reply_email);
+
+
+  document.querySelector('#arch_button').addEventListener('click', () => { 
+    archive(teste); 
+  });
+
+  document.querySelector('#unarch_button').addEventListener('click', () => { 
+    archive(teste);
+  });
+
   //Post email
-  document.querySelector('#reply_button').onsubmit = function() {
+  document.querySelector('#compose-view').onsubmit = function() {
     var t = document.getElementById('compose-recipients').value;
     var s = document.getElementById('compose-subject').value;
     var b = document.getElementById('compose-body').value;
     post_email(t, s, b);
-    
   }; 
 
-    // By default, load the inbox
-    load_mailbox('inbox');
-    tela = 'inbox';
-    request_emails(); 
+    //Reply post email
+    document.querySelector('#reply-view').onsubmit = function() {
+      var t = document.getElementById('reply-recipients').value;
+      var s = document.getElementById('reply-subject').value;
+      var b = document.getElementById('reply-body').value;
+      post_email(t, s, b);
+
+    }; 
+
+  // By default, load inbox
+  load_inbox()
+     
+
 });
 
 
@@ -44,6 +61,7 @@ function compose_email() {
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#display-email-inbox').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
+  document.querySelector('#reply-view').style.display = 'none';
 
   // Clear out composition fields
   document.querySelector('#compose-recipients').value = '';
@@ -51,12 +69,35 @@ function compose_email() {
   document.querySelector('#compose-body').value = '';
 }
 
+
+function reply_email() {
+
+  // Show compose view and hide other views
+  document.querySelector('#emails-view').style.display = 'none';
+  document.querySelector('#display-email-inbox').style.display = 'none';
+  document.querySelector('#compose-view').style.display = 'none';
+  document.querySelector('#reply-view').style.display = 'block';
+
+  // Clear out composition fields
+  if (teste){
+    document.querySelector('#reply-recipients').value = teste.sender;
+    if (teste.subject.startsWith("Re: ")){
+      document.querySelector('#reply-subject').value = teste.subject;
+    }else{
+      document.querySelector('#reply-subject').value = 'Re: ' + teste.subject;
+    }
+    
+    document.querySelector('#reply-body').value = teste.timestamp + " " + teste.sender + " wrote: " + "\n\n" + teste.body + " \n-------------------------------------------\n";
+  }
+}
+
 function load_mailbox(mailbox) {
-  
+
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#display-email-inbox').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'none';
+  document.querySelector('#reply-view').style.display = 'none';
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
@@ -67,8 +108,9 @@ function display_email(element){
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'none';
   document.querySelector('#display-email-inbox').style.display = 'block';
-
-  request_an_email(element)
+  document.querySelector('#reply-view').style.display = 'none';
+  console.log("Display E-mail");
+  request_an_email(element);
 }
 
 
@@ -86,9 +128,10 @@ function post_email(recipients, subjects, body){
   .then(result => {
       // Print result
       console.log(result);
+      load_mailbox('sent');
+      tela = 'sent';
+      request_emails();
   });
-
-  load_mailbox('sent');
 }
 
 function request_emails(){
@@ -98,16 +141,16 @@ function request_emails(){
   .then(response => response.json())
   .then(emails => {
       // Print emails
-      //console.log(emails);
+      console.log(str);
 
       const table = document.createElement('table');
       const tbody = document.createElement('tbody');
       table.appendChild(tbody);
       table.setAttribute('class', 'table');
+
       document.querySelector('#emails-view').append(table);
 
       emails.forEach(element => {
-        console.log(element);
         // ... do something else with emails ...
         //const email = document.createElement('div');
         //email.innerHTML = element.body;
@@ -119,11 +162,10 @@ function request_emails(){
 
          
         tr.addEventListener('click', function() {
-          console.log('The element id is: ' + element.id);
           display_email(element);
+          console.log("Request Emaisl")
         });
 
-        console.log(element.body);
         tbody.append(tr);
       });
     });
@@ -153,22 +195,21 @@ function return_email_tr(element){
 function request_an_email(element){
   var str = '/emails/' + element.id;
 
+  console.log(str);
   fetch(str)
   .then(response => response.json())
   .then(email => {
       // Print email
       console.log(email);
       // ... do something else with email ...
-      var main_div = document.querySelector('#display-email-inbox');
-      //main_div.innerHTML='';
-
-     /*
+  
+      /*
       var div_sender = document.querySelector('#div_sender');
       var div_recipients = document.querySelector('#div_recipients');
       var div_date = document.querySelector('#div_date');
       var div_subject= document.querySelector('#div_subject');  
       var reply_button = document.querySelector("#reply_button");
-      //var arch_button = document.querySelector("#arch_button");    
+      var arch_button = document.querySelector("#arch_button");    
       */
       div_sender.innerHTML = '<b>From:</b> ' + email.sender;
       div_recipients.innerHTML = '<b>To:</b> ' + email.recipients;
@@ -203,20 +244,14 @@ function request_an_email(element){
         }) 
       }
       
+      teste = element;
+
       var div_body = document.querySelector('#div_body');
       div_body.innerHTML = email.body;
 
-
-      arch_button.addEventListener('click', () => { 
-        archive(element);
-        console.log('=========D');
-      });
-
-      unarch_button.addEventListener('click', () => { 
-        archive(element);
-        console.log('D========');
-      });
   });
+  
+      
 }
 
 function archive(element){
@@ -227,14 +262,29 @@ function archive(element){
       body: JSON.stringify({
           archived: false
       })
-    })
+    }).then(response => response.json())
+    .then(_result => {
+        // Print result
+        load_inbox() 
+    });
   }else{
     fetch('/emails/' + element.id, {
       method: 'PUT',
       body: JSON.stringify({
           archived: true
       })
+    }).then(response => response.json())
+    .then(_result => {
+        // Print result
+        load_inbox() 
     })
   }
 
+}
+
+//load the inbox
+function load_inbox(){
+      load_mailbox('inbox');
+      tela = 'inbox';
+      request_emails();       
 }
