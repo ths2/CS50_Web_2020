@@ -25,7 +25,7 @@
                 {% csrf_token %}
                     {{ formWL|bootstrap }}
                 
-                {% if isuser and listing.active %}
+                {% if listing.active %}
                     {% if existsWl %}   
                         <button type="submit" class="btn btn-danger">Remove Watchlist</button>
                     {% else %}
@@ -35,7 +35,7 @@
 
             </form>
             <p></p>
-            {% if isuser and listing.active %}
+            {% if  isuser and listing.active %}
             <form action="{% url 'lpage' listing.id %}" method="post">
                 {% csrf_token %}
                     {{ formClose }}
@@ -49,7 +49,7 @@
 
 
     
-    {% if user.is_authenticated %}   
+    {% if user.is_authenticated and listing.active %}   
     <div >     
     <form class="form-inline" action="{% url 'lpage' listing.id %}" method="post">
         {% csrf_token %}
@@ -77,7 +77,7 @@
 
 </div>
 
-{% if isuser and listing.active %}
+{% if listing.active %}
 <form action="{% url 'lc' listing.id %}" method="post">
     {% csrf_token %}
        {{ formComment|bootstrap  }}
