@@ -41,7 +41,7 @@ def compose(request):
     recipients = []
     for email in emails:
         try:
-            user = User.objects.get(email=email)
+            user = User.objects.get(username=email)
             recipients.append(user)
         except User.DoesNotExist:
             return JsonResponse({
@@ -80,6 +80,7 @@ def mailbox(request, mailbox):
         emails = Email.objects.filter(
             user=request.user, recipients=request.user, archived=False
         )
+        print(emails)
     elif mailbox == "sent":
         emails = Email.objects.filter(
             user=request.user, sender=request.user

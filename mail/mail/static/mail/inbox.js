@@ -141,7 +141,7 @@ function request_emails(){
   .then(response => response.json())
   .then(emails => {
       // Print emails
-      console.log(str);
+      console.log(emails);
 
       const table = document.createElement('table');
       const tbody = document.createElement('tbody');
@@ -178,8 +178,12 @@ function return_email_tr(element){
   var td_subject = document.createElement('td');
   var td_date = document.createElement('td');
 
-
-  td_sender.innerHTML = element_email.sender;
+  if (tela == "inbox" || tela =="archive"){
+    td_sender.innerHTML = element_email.sender;
+  } else if (tela == "sent"){
+    td_sender.innerHTML = element_email.recipients;
+  }
+  
   td_subject.innerHTML = element_email.subject;
   td_date.innerHTML = element_email.timestamp;
 
