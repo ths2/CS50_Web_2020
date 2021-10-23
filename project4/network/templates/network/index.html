@@ -1,5 +1,17 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-    TODO
+<h1>All Posts</h1>
+    <div class="container-fluid p-3 my-3 border">
+        <div id="compose-view">
+            <h3>New Post</h3>
+            <form action="{% url 'new_post' %}" method="post" id="compose-form" >
+                {% csrf_token %}
+                <textarea class="form-control" name="text" id="compose-body" placeholder="Body"></textarea><p>
+                <div>
+                    <input value="Post" type="submit" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
 {% endblock %}

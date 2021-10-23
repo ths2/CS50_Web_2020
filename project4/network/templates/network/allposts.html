@@ -1,0 +1,16 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+    <h1>All Posts</h1>
+    {% for post in posts %}
+        <div class="container p-3 m-2 border ">
+            <p>{{post.text}} </p>
+            <p>{{post.user}}</p>
+            <p>{{post.create_at}}</p>
+            <p>{{post.likes}}</p>
+        </div>
+        {% empty %}
+        No Posts
+    {% endfor %}
+
+{% endblock %}
