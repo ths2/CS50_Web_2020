@@ -1,11 +1,11 @@
 {% extends "network/layout.html" %}
-
+{% load static %}
 {% block body %}
     <h1>All Posts</h1>
     {% for post in posts %}
         <div class="container p-3 m-2 border ">
             <p>{{post.text}} </p>
-            <p>{{post.user}}</p>
+            <p><a href="{% url 'perfil' post.user %}"> {{post.user}} </a></p>
             <p>{{post.create_at}}</p>
             <p>{{post.likes}}</p>
         </div>
@@ -14,3 +14,4 @@
     {% endfor %}
 
 {% endblock %}
+

@@ -1,0 +1,32 @@
+{% extends "network/layout.html" %}
+{% load static %}
+{% block body %}
+    <h1>Profile</h1>
+    <div id="perfilname">
+        <p id="username">{{perfil.username}}</p>
+    </div>
+    <div id="followers"> 
+        <p>Followers {{followers}}</p>
+        <p>Following {{following}}</p>
+    </div>
+    {% if user.is_authenticated and not isuser %}
+    <div>
+        {% if userFollowingPerfil %}
+        <button id="follow_button">Unfollow</button>
+        {% else %}
+        <button id="follow_button">Follow</button>
+        {% endif %}
+    </div>
+    {% endif %}
+    <div id="perfilposts">
+        {% for p in posts %}
+            <div>
+            {{p.text}}
+        {% endfor %}
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/layout.js' %}"></script>
+{% endblock %}

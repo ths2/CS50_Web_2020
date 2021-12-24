@@ -1,8 +1,14 @@
+from typing import NewType
+import json
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
+
+from django.core.paginator import Paginator
 
 from .models import *
 
@@ -79,8 +85,72 @@ def create_post(request):
 
 def all_posts(request):
     posts = Post.objects.all()
-
     return render(request, "network/allposts.html",{
-        "posts": posts
+        "posts": posts[::-1]
     })
 
+def perfil(request, perfil):
+    user = request.user
+    p = User.objects.get(username=perfil)
+    posts = Post.objects.all().filter(user=p)
+    followers = p.followers.all().count()
+    following = p.following.all().count()
+    
+    userFollowingPerfil = False
+    isUser = False
+    if user == p:
+        isUser = True
+    else:
+        userFollowingPerfil = p.followers.all().filter(username=user).exists()
+        
+
+    
+    return render(request, "network/perfil.html", {
+        "perfil":p, "posts":posts[::-1], 
+        "followers":followers, 
+        "following": following,
+        "isuser":isUser,
+        "userFollowingPerfil":userFollowingPerfil
+    })
+
+@csrf_exempt
+@login_required
+def follow(request):
+
+    
+    # Composing a new email must be via POST
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
+
+    data = json.loads(request.body)
+    idUser = data.get("idUser")
+    follower = User.objects.get(username=idUser)
+    user = User.objects.get(username=request.user)
+    following = user.followers.all().filter(username = idUser).exists()
+    
+    if following:
+        user.followers.remove(follower)
+        return JsonResponse({"message": "Unfollow"}, status=201)
+    else:
+         user.followers.add(follower)
+         return JsonResponse({"message": "Follow"}, status=201)
+    
+
+
+@login_required
+def following(request):
+    
+    user = User.objects.get(username = request.user)
+    following = user.following.all()
+    posts = Post.objects.all().filter(user__in = following).order_by("create_at")
+
+    paginator = Paginator(posts, 10) # Show 10 contacts per page.
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, "network/following.html",{
+        "page_obj": page_obj
+    })
+    
+    
