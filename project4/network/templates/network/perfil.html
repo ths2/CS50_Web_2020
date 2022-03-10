@@ -1,32 +1,69 @@
 {% extends "network/layout.html" %}
 {% load static %}
 {% block body %}
-    <h1>Profile</h1>
-    <div id="perfilname">
-        <p id="username">{{perfil.username}}</p>
-    </div>
-    <div id="followers"> 
-        <p>Followers {{followers}}</p>
-        <p>Following {{following}}</p>
+
+<div id="perfilname">
+  <h1 class="text-primary" id="username">{{perfil.username}}</h1>
+</div>
+<div class="row">
+  <div class="col-sm-2">
+    <div id="followers">
+      <p>Followers <b id="u_followers">{{followers}}</b></p>
+      <p>Following <b id="u_following">{{following}}</b></p>
     </div>
     {% if user.is_authenticated and not isuser %}
     <div>
-        {% if userFollowingPerfil %}
-        <button id="follow_button">Unfollow</button>
-        {% else %}
-        <button id="follow_button">Follow</button>
-        {% endif %}
+      {% if userFollowingPerfil %}
+      <button type="button" class="btn btn-danger" id="follow_button">Unfollow</button>
+      {% else %}
+      <button type="button" class="btn btn-primary" id="follow_button">Follow</button>
+      {% endif %}
     </div>
     {% endif %}
+  </div>
+  <div class="col-sm-10">
     <div id="perfilposts">
-        {% for p in posts %}
-            <div>
-            {{p.text}}
-        {% endfor %}
+      <div>
+        <h2>Posts:</h2>
+      </div>
+      {% for post in posts %}
+      <div class="container p-3 m-2 border ">
+        <p id="post_text">{{post.text}}</p>
+        <input type="hidden" id="id_post" name="id" value="{{post.id}}" />
+        {% if post.user == request.user%}
+        <button id="edit_post_button" type="button" class="btn btn-outline-info btn-sm">Edit</button>
+
+        <div id="edit_post">
+          <form style="display:none" class="form_post" target="hidden-form">
+            <textarea class="form-control" id="edited_post" placeholder="Body"></textarea><br>
+            <input id="post_json" value="Post" type="submit" class="btn btn-primary" />
+          </form>
+          <IFRAME style="display:none" name="hidden-form"></IFRAME>
+        </div>
+
+        {% endif %}
+        <h4><a href="{% url 'perfil' post.user %}"> {{post.user}} </a></h4>
+        <p>{{post.create_at}}</p>
+
+
+        <div id="post_likes">
+          <i id="likes" class='far fa-thumbs-up' style='font-size:36px'>{{post.likes.all.count}}</i>
+          <i id="dislikes" class='far fa-thumbs-down' style='font-size:36px'>{{post.deslikes.all.count}}</i>
+        </div>
+      </div>
+
+      {% empty %}
+      No Posts
+      {% endfor %}
+
     </div>
+
+  </div>
+</div>
 
 {% endblock %}
 
 {% block script %}
-    <script src="{% static 'network/layout.js' %}"></script>
+<script src="{% static 'network/layout.js' %}"></script>
+<script src="{% static 'network/allposts.js' %}"></script>
 {% endblock %}

@@ -1,17 +1,76 @@
 {% extends "network/layout.html" %}
 {% load static %}
 {% block body %}
-    <h1>All Posts</h1>
-    {% for post in posts %}
-        <div class="container p-3 m-2 border ">
-            <p>{{post.text}} </p>
-            <p><a href="{% url 'perfil' post.user %}"> {{post.user}} </a></p>
-            <p>{{post.create_at}}</p>
-            <p>{{post.likes}}</p>
-        </div>
-        {% empty %}
-        No Posts
-    {% endfor %}
+<h1>All Posts</h1>
+<div class="container-fluid p-3 my-3 border">
+  <div id="compose-view">
+      <h3>New Post</h3>
+      <form action="{% url 'new_post' %}" method="post" id="compose-form" >
+          {% csrf_token %}
+          <textarea class="form-control" name="text" id="compose-body" placeholder="Body"></textarea><p>
+          <div>
+              <input value="Post" type="submit" class="btn btn-primary" />
+          </div>
+      </form>
+  </div>
+</div>
+{% for post in page_obj %}
+<div class="container p-3 m-2 border ">
+  <p id="post_text">{{post.text}}</p>
+  <input type="hidden" id="id_post" name="id" value="{{post.id}}" />
+  {% if post.user == request.user%}
+  <button id="edit_post_button" type="button" class="btn btn-outline-info btn-sm">Edit</button>
+
+  <div id="edit_post">
+    <form style="display:none" class="form_post" target="hidden-form">
+      <textarea class="form-control" id="edited_post" placeholder="Body"></textarea><br>
+      <input id="post_json" value="Post" type="submit" class="btn btn-primary" />
+    </form>
+    <IFRAME style="display:none" name="hidden-form"></IFRAME>
+  </div>
+
+  {% endif %}
+  <h4><a href="{% url 'perfil' post.user %}"> {{post.user}} </a></h4>
+  <p>{{post.create_at}}</p>
+
+
+  <div id="post_likes">
+    <i id="likes" class='far fa-thumbs-up' style='font-size:36px'>{{post.likes.all.count}}</i>
+    <i id="dislikes" class='far fa-thumbs-down' style='font-size:36px'>{{post.deslikes.all.count}}</i>
+  </div>
+</div>
+
+{% empty %}
+No Posts
+{% endfor %}
+
+
+<nav aria-label="Page navigation example">
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+    <li class="page-item">
+      <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+        <span aria-hidden="true">&laquo;</span>
+      </a>
+    </li>
+    {% endif %}
+    <span class="current">
+      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+    </span>
+    {% if page_obj.has_next %}
+    <li class="page-item">
+      <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+        <span aria-hidden="true">&raquo;</span>
+      </a>
+    </li>
+    {% endif %}
+  </ul>
+</nav>
+
+
 
 {% endblock %}
 
+{% block script %}
+<script src="{% static 'network/allposts.js' %}"></script>
+{% endblock %}

@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', function(){
         post_follow(username);
     });
 
-
 })
 
 
@@ -21,14 +20,22 @@ function post_follow(idUserFollow){
     .then(result => {
         // Print result
         console.log(result);
-        var username = document.getElementById('#follow_button')
-        var action =  document.getElementById('follow_button')
 
+        var action =  document.getElementById('follow_button')
+        var followers =document.getElementById('u_followers')
+        var followers_cont = parseInt(followers.textContent)
+        
         if(result.message == 'Unfollow'){
             action.innerHTML = 'Follow';
+            action.className = "btn btn-primary";
         }else if (result.message == 'Follow') {
             action.innerHTML = 'Unfollow';
+            action.className = 'btn btn-danger';
         }
-        console.log(action)
+        if (result.message == 'Unfollow'){
+            followers.textContent = followers_cont - 1;
+        }else if (result.message == 'Follow'){
+            followers.textContent = followers_cont + 1;
+        }
     });
   }

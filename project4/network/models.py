@@ -5,8 +5,8 @@ from django.db.models.fields import Field
 
 class User(AbstractUser):
     pass
-    following = models.ManyToManyField('self', blank=True, related_name="following_user")
-    followers = models.ManyToManyField('self', blank=True, related_name="followers_user")
+    following = models.ManyToManyField('self', blank=True)
+    followers = models.ManyToManyField('self', blank=True)
 
 
 class Post(models.Model):
